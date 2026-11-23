@@ -8,6 +8,7 @@ chromadb
 pypdf
 rank_bm25
 # local embeddings + cross-encoder reranker (free, no API key)
+langchain-google-genai
 langchain-huggingface
 sentence-transformers
 # pick ONE LLM provider (or ollama for fully local)
