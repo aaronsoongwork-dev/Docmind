@@ -22,7 +22,7 @@ def get_llm():
     if s.llm_provider == "gemini":
         from langchain_google_genai import ChatGoogleGenerativeAI
         return ChatGoogleGenerativeAI(model=s.llm_model, temperature=0,
-                                      timeout=s.llm_timeout, max_retries=0)
+                                      timeout=s.llm_timeout, max_retries=5)
     if s.llm_provider == "anthropic":
         from langchain_anthropic import ChatAnthropic
         return ChatAnthropic(model=s.llm_model, temperature=0, timeout=s.llm_timeout, max_retries=0)

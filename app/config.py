@@ -1,6 +1,11 @@
 """Settings read from environment variables (see .env.example)."""
+from dotenv import load_dotenv
+load_dotenv()
+
 import os
 from dataclasses import dataclass
+
+
 
 
 @dataclass(frozen=True)
