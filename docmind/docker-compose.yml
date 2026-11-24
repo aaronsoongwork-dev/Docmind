@@ -1,0 +1,32 @@
+# docker compose up --build      (reads your .env for the LLM settings and API key)
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: docmind
+      POSTGRES_PASSWORD: docmind        # local dev only; use a secret in real deployments
+      POSTGRES_DB: docmind
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U docmind"]
+      interval: 3s
+      retries: 10
+  app:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://docmind:docmind@db:5432/docmind
+      CHROMA_DIR: /data/chroma_db
+      # To use Ollama running on your machine from inside the container:
+      # OLLAMA_BASE_URL: http://host.docker.internal:11434
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma:/data
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  pgdata:
+  chroma:

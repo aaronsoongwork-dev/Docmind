@@ -1,0 +1,6 @@
+# Heavy (PyTorch): local embeddings, reranker, fine-tuning. Not needed for the unit tests.
+-r requirements.txt
+langchain-huggingface
+sentence-transformers
+datasets                   # fine-tuning
+accelerate                 # fine-tuning

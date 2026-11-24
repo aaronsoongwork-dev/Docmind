@@ -1,0 +1,7 @@
+[
+  {"question": "How many days of annual leave do employees get?", "answer": "18"},
+  {"question": "How often does the VPN token rotate?", "answer": "30"},
+  {"question": "What expense amount needs director approval?", "answer": "500"},
+  {"question": "What is the company's pet policy?", "unanswerable": true},
+  {"question": "Who is the CEO?", "unanswerable": true}
+]

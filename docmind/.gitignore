@@ -1,0 +1,10 @@
+.env
+chroma_db/
+*.db
+models/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.venv/
+benchmark/results.json

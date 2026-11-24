@@ -1,0 +1,22 @@
+# --- core (what CI installs) ---
+langchain>=1.0
+langchain-core
+langchain-community        # BM25Retriever, PyPDFLoader
+langchain-text-splitters
+langchain-chroma
+chromadb
+pypdf
+rank_bm25
+langgraph                  # agent
+sqlalchemy>=2.0            # users / chat history / document metadata
+psycopg[binary]            # Postgres driver (SQLite needs nothing)
+python-dotenv
+fastapi
+uvicorn[standard]
+python-multipart
+email-validator
+# --- LLM providers: keep the ones you use ---
+langchain-google-genai     # Gemini
+langchain-ollama           # local models
+# langchain-anthropic
+# langchain-openai
