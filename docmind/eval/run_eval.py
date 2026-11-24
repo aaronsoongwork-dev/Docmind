@@ -28,7 +28,7 @@ def run(pdf, questions, chunk_sizes=(200, 800), k=None):
     k = k or s.top_k
     rows = []
     for size in chunk_sizes:
-        with tempfile.TemporaryDirectory() as tmp:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
             store = get_store(tmp, collection=f"eval_{size}")
             chunks = load_and_split(pdf, size)
             store.add_documents(chunks, ids=[c.metadata["chunk_id"] for c in chunks])

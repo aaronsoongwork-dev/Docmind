@@ -59,7 +59,7 @@ def evaluate_llm(llm, retriever, questions: list[dict], rerank: bool = False) ->
 
 def run(pdf: str, questions: list[dict], specs: list[str], llm_factory=get_llm) -> dict:
     s = get_settings()
-    with tempfile.TemporaryDirectory() as tmp:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         store = get_store(tmp, collection="bench")
         chunks = load_and_split(pdf, s.chunk_size)
         store.add_documents(chunks, ids=[c.metadata["chunk_id"] for c in chunks])

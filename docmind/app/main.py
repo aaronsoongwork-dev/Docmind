@@ -124,7 +124,7 @@ def ingest(file: UploadFile = File(...), category: str = Form("general"),
     name = Path(file.filename or "").name
     if not name.lower().endswith(".pdf"):
         raise HTTPException(400, "Only PDF files are supported")
-    with tempfile.TemporaryDirectory() as tmp:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         path = Path(tmp) / name
         with open(path, "wb") as f:
             shutil.copyfileobj(file.file, f)
