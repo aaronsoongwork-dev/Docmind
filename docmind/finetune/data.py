@@ -1,4 +1,5 @@
 """Build (question, positive chunk) training pairs and split them for an honest evaluation."""
+# this will turn the QUESTIONS into (question, correct chunk) pairs --> split into training and testing sets
 import json
 import logging
 import random

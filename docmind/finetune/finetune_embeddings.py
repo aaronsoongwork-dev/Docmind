@@ -14,6 +14,7 @@ from app.config import get_settings
 
 from .data import load_chunks, load_pairs, split_pairs
 
+
 log = logging.getLogger("docmind.finetune")
 
 
@@ -25,7 +26,7 @@ def train(pairs, base_model: str, out_dir: str, epochs: int = 3, batch_size: int
         SentenceTransformerTrainingArguments,
         losses,
     )
-    from sentence_transformers.training_args import BatchSamplers
+    from sentence_transformers.sentence_transformer.training_args import BatchSamplers
 
     model = SentenceTransformer(base_model)
     ds = Dataset.from_dict({"anchor": [q for q, _ in pairs], "positive": [p for _, p in pairs]})
