@@ -56,5 +56,9 @@ if __name__ == "__main__":
     ap.add_argument("--out", default="finetune/synthetic.json")
     a = ap.parse_args()
     data = generate(load_chunks(a.pdf, a.chunk_size), get_llm(), a.per_chunk)
+    if not data:
+        raise SystemExit("No questions were generated: the LLM failed for every chunk (see the warnings above). "
+                         "Nothing was written. Try again later, set LLM_FALLBACK_MODEL in .env, or use "
+                         "LLM_PROVIDER=ollama.")
     json.dump(data, open(a.out, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
     print(f"wrote {len(data)} questions to {a.out}")

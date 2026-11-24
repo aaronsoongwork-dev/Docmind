@@ -2,7 +2,7 @@
 
   ollama pull qwen2.5:3b            # once, any small model you like
   python -m benchmark.compare_llms --pdf data/my_doc.pdf --questions benchmark/questions.json \
-      --models gemini:gemini-2.5-flash ollama:qwen2.5:3b ollama:llama3.2:3b
+      --models gemini:gemini-3.8-flash ollama:qwen2.5:3b ollama:llama3.2:3b
 
 questions.json items:
   {"question": "...", "answer": "text the correct answer must contain"}       (answerable)
@@ -11,6 +11,7 @@ Retrieval is identical for every model (same chunks), so differences come from t
 """
 import argparse
 import json
+import logging
 import statistics
 import tempfile
 import time
@@ -20,6 +21,8 @@ from app.config import get_settings
 from app.ingest import get_store, load_and_split
 from app.models import get_llm
 from app.retrieval import HybridRetriever
+
+log = logging.getLogger("docmind.benchmark")
 
 
 def split_spec(spec: str) -> tuple[str, str]:
@@ -41,20 +44,21 @@ def is_correct(item: dict, result) -> bool:
 
 
 def evaluate_llm(llm, retriever, questions: list[dict], rerank: bool = False) -> dict:
-    correct, failures, latencies = 0, 0, []
+    correct, failures, latencies, first_error = 0, 0, [], None
     for item in questions:
         t0 = time.perf_counter()
         try:
             result = ask(item["question"], retriever, llm, rerank=rerank, rewrite=False)
-        except Exception:      # still invalid / unreachable after the 3 retries
+        except Exception as e:      # still invalid / unreachable after the 3 retries
             failures += 1
+            first_error = first_error or f"{type(e).__name__}: {str(e)[:300]}"
             continue
         latencies.append(time.perf_counter() - t0)
         correct += is_correct(item, result)
     n = len(questions)
     return {"accuracy": correct / n, "failures": failures, "n": n,
             "p50_s": statistics.median(latencies) if latencies else float("nan"),
-            "p95_s": percentile(latencies, 95)}
+            "p95_s": percentile(latencies, 95), "first_error": first_error}
 
 
 def run(pdf: str, questions: list[dict], specs: list[str], llm_factory=get_llm) -> dict:
@@ -81,3 +85,6 @@ if __name__ == "__main__":
     print(f"{'model':<34}{'accuracy':>9}{'failed':>8}{'p50 s':>8}{'p95 s':>8}")
     for spec, r in results.items():
         print(f"{spec:<34}{r['accuracy']:>9.0%}{r['failures']:>8}{r['p50_s']:>8.1f}{r['p95_s']:>8.1f}")
+    for spec, r in results.items():
+        if r["first_error"]:
+            print(f"\nFirst error for {spec}:\n  {r['first_error']}")

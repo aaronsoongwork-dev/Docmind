@@ -53,6 +53,7 @@ def safe_calc(expr: str) -> float | int:
 
 
 # ---------- router ----------
+# this is used for Pydantic Schema testing
 class Decision(BaseModel):
     action: Literal["search_documents", "calculate", "ask_user", "finish"]
     input: str = Field(description="search query | arithmetic expression | question for the user | final answer")
