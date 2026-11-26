@@ -1,0 +1,146 @@
+[
+ {
+  "chunk_size": 200,
+  "chunks": 6739,
+  "method": "dense",
+  "hit_rate": 0.5666666666666667,
+  "avg_context_chars": 612.3,
+  "k": 4,
+  "questions": 30
+ },
+ {
+  "chunk_size": 200,
+  "chunks": 6739,
+  "method": "sparse",
+  "hit_rate": 0.5,
+  "avg_context_chars": 620.0333333333333,
+  "k": 4,
+  "questions": 30
+ },
+ {
+  "chunk_size": 200,
+  "chunks": 6739,
+  "method": "hybrid",
+  "hit_rate": 0.6333333333333333,
+  "avg_context_chars": 614.4666666666667,
+  "k": 4,
+  "questions": 30
+ },
+ {
+  "chunk_size": 200,
+  "chunks": 6739,
+  "method": "hybrid+rerank",
+  "hit_rate": 0.6666666666666666,
+  "avg_context_chars": 616.6666666666666,
+  "k": 4,
+  "questions": 30
+ },
+ {
+  "chunk_size": 400,
+  "chunks": 2992,
+  "method": "dense",
+  "hit_rate": 0.5,
+  "avg_context_chars": 1407.0,
+  "k": 4,
+  "questions": 30
+ },
+ {
+  "chunk_size": 400,
+  "chunks": 2992,
+  "method": "sparse",
+  "hit_rate": 0.6,
+  "avg_context_chars": 1437.4333333333334,
+  "k": 4,
+  "questions": 30
+ },
+ {
+  "chunk_size": 400,
+  "chunks": 2992,
+  "method": "hybrid",
+  "hit_rate": 0.7,
+  "avg_context_chars": 1411.1333333333334,
+  "k": 4,
+  "questions": 30
+ },
+ {
+  "chunk_size": 400,
+  "chunks": 2992,
+  "method": "hybrid+rerank",
+  "hit_rate": 0.7333333333333333,
+  "avg_context_chars": 1425.6666666666667,
+  "k": 4,
+  "questions": 30
+ },
+ {
+  "chunk_size": 800,
+  "chunks": 1647,
+  "method": "dense",
+  "hit_rate": 0.4666666666666667,
+  "avg_context_chars": 2775.7,
+  "k": 4,
+  "questions": 30
+ },
+ {
+  "chunk_size": 800,
+  "chunks": 1647,
+  "method": "sparse",
+  "hit_rate": 0.7666666666666667,
+  "avg_context_chars": 2884.9333333333334,
+  "k": 4,
+  "questions": 30
+ },
+ {
+  "chunk_size": 800,
+  "chunks": 1647,
+  "method": "hybrid",
+  "hit_rate": 0.7666666666666667,
+  "avg_context_chars": 2864.266666666667,
+  "k": 4,
+  "questions": 30
+ },
+ {
+  "chunk_size": 800,
+  "chunks": 1647,
+  "method": "hybrid+rerank",
+  "hit_rate": 0.8666666666666667,
+  "avg_context_chars": 2874.0,
+  "k": 4,
+  "questions": 30
+ },
+ {
+  "chunk_size": 1200,
+  "chunks": 1190,
+  "method": "dense",
+  "hit_rate": 0.5333333333333333,
+  "avg_context_chars": 3538.1666666666665,
+  "k": 4,
+  "questions": 30
+ },
+ {
+  "chunk_size": 1200,
+  "chunks": 1190,
+  "method": "sparse",
+  "hit_rate": 0.7,
+  "avg_context_chars": 4320.566666666667,
+  "k": 4,
+  "questions": 30
+ },
+ {
+  "chunk_size": 1200,
+  "chunks": 1190,
+  "method": "hybrid",
+  "hit_rate": 0.7666666666666667,
+  "avg_context_chars": 4014.0,
+  "k": 4,
+  "questions": 30
+ },
+ {
+  "chunk_size": 1200,
+  "chunks": 1190,
+  "method": "hybrid+rerank",
+  "hit_rate": 0.8666666666666667,
+  "avg_context_chars": 3992.5666666666666,
+  "k": 4,
+  "questions": 30
+ }
+]

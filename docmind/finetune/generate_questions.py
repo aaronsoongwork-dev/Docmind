@@ -6,6 +6,8 @@ Hand-writing 10 questions is enough to MEASURE retrieval; fine-tuning needs hund
 import argparse
 import json
 import logging
+import random
+import time
 
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate
@@ -33,7 +35,7 @@ _prompt = ChatPromptTemplate.from_messages([
 ]).partial(format_instructions=_parser.get_format_instructions())
 
 
-def generate(chunks: list[str], llm, per_chunk: int = 4) -> list[dict]:
+def generate(chunks: list[str], llm, per_chunk: int = 4, sleep: float = 0.0) -> list[dict]:
     chain = (_prompt | llm | _parser).with_retry(stop_after_attempt=3, wait_exponential_jitter=True)
     out = []
     for i, chunk in enumerate(chunks, 1):
@@ -44,6 +46,8 @@ def generate(chunks: list[str], llm, per_chunk: int = 4) -> list[dict]:
             continue
         out += [{"question": q.strip(), "positive": chunk} for q in qs if q.strip()]
         log.info("chunk %d/%d -> %d questions", i, len(chunks), len(qs))
+        if sleep:
+            time.sleep(sleep)
     return out
 
 
@@ -53,9 +57,17 @@ if __name__ == "__main__":
     ap.add_argument("pdf")
     ap.add_argument("--per-chunk", type=int, default=4)
     ap.add_argument("--chunk-size", type=int, default=get_settings().chunk_size)
+    ap.add_argument("--max-chunks", type=int, default=None, help="use a random sample of this many chunks")
+    ap.add_argument("--min-chars", type=int, default=200, help="skip chunks shorter than this (headings etc.)")
+    ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--sleep", type=float, default=0.0, help="seconds between LLM calls (rate limits)")
     ap.add_argument("--out", default="finetune/synthetic.json")
     a = ap.parse_args()
-    data = generate(load_chunks(a.pdf, a.chunk_size), get_llm(), a.per_chunk)
+    chunks = [c for c in load_chunks(a.pdf, a.chunk_size) if len(c) >= a.min_chars]
+    if a.max_chunks and a.max_chunks < len(chunks):
+        chunks = random.Random(a.seed).sample(chunks, a.max_chunks)
+    print(f"generating questions for {len(chunks)} chunks ...")
+    data = generate(chunks, get_llm(), a.per_chunk, a.sleep)
     if not data:
         raise SystemExit("No questions were generated: the LLM failed for every chunk (see the warnings above). "
                          "Nothing was written. Try again later, set LLM_FALLBACK_MODEL in .env, or use "

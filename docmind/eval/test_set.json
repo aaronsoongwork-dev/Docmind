@@ -1,0 +1,18 @@
+[
+ {
+  "question": "Who described unprincipled comprehensiveness as the resolve to hold together various Christian faiths and practices?",
+  "expected": "Dr Alex Vidler has described the latter",
+  "answer": "Dr Alex Vidler",
+  "page": 363
+ },
+ {
+  "question": "What kind of children did Jesus tell people to become like?",
+  "expected": "Jesus told us to become like little children",
+  "answer": "little children",
+  "page": 166
+ },
+ {
+  "question": "Which specific theological seminary or university did the author attend before writing these commentaries?",
+  "unanswerable": true
+ }
+]

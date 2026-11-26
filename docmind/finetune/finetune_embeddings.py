@@ -6,6 +6,7 @@
 Then use it:  EMBEDDINGS_MODEL=models/docmind-embed-ft   (and RE-INGEST: old vectors don't match).
 """
 import argparse
+import json
 import logging
 
 import numpy as np
@@ -13,7 +14,6 @@ import numpy as np
 from app.config import get_settings
 
 from .data import load_chunks, load_pairs, split_pairs
-
 
 log = logging.getLogger("docmind.finetune")
 
@@ -26,7 +26,7 @@ def train(pairs, base_model: str, out_dir: str, epochs: int = 3, batch_size: int
         SentenceTransformerTrainingArguments,
         losses,
     )
-    from sentence_transformers.sentence_transformer.training_args import BatchSamplers
+    from sentence_transformers.training_args import BatchSamplers
 
     model = SentenceTransformer(base_model)
     ds = Dataset.from_dict({"anchor": [q for q, _ in pairs], "positive": [p for _, p in pairs]})
@@ -58,33 +58,52 @@ def evaluate(model_name_or_path: str, pairs, chunks: list[str], k: int = 4) -> d
             "mrr": float((1 / r).mean()), "n": len(pairs)}
 
 
+def run(pdf: str, questions: str, base: str, out: str, *, test_questions: str | None = None,
+        chunk_size: int = 800, epochs: int = 3, test_fraction: float = 0.3, seed: int = 42, k: int = 4) -> dict:
+    """Train on `questions`; test on `test_questions` if given (a separate, reviewed file), otherwise on a
+    random held-out share of `questions`."""
+    chunks = load_chunks(pdf, chunk_size)
+    pairs = load_pairs(chunks, questions)
+    if test_questions:
+        test_pairs = load_pairs(chunks, test_questions)
+        if not test_pairs:
+            raise ValueError("No test question could be matched to a chunk (check chunk size / 'expected' text).")
+        test_texts = {q for q, _ in test_pairs}
+        train_pairs = [p for p in pairs if p[0] not in test_texts]
+    else:
+        train_pairs, test_pairs = split_pairs(pairs, test_fraction, seed)
+    before = evaluate(base, test_pairs, chunks, k)
+    train(train_pairs, base, out, epochs)
+    after = evaluate(out, test_pairs, chunks, k)
+    return {"chunks": len(chunks), "train_pairs": len(train_pairs), "test_pairs": len(test_pairs),
+            "k": k, "before": before, "after": after}
+
+
 def main():
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     s = get_settings()
     ap = argparse.ArgumentParser()
     ap.add_argument("--pdf", required=True)
-    ap.add_argument("--questions", required=True)
+    ap.add_argument("--questions", required=True, help="training questions (finetune.generate_questions output)")
+    ap.add_argument("--test-questions", default=None,
+                    help="optional separate, hand-reviewed test file (e.g. eval/eval_set.json)")
     ap.add_argument("--base", default=s.embeddings_model)
     ap.add_argument("--out", default="models/docmind-embed-ft")
     ap.add_argument("--chunk-size", type=int, default=s.chunk_size)
     ap.add_argument("--epochs", type=int, default=3)
     ap.add_argument("--test-fraction", type=float, default=0.3)
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--results", default="finetune/results.json")
     ap.add_argument("-k", type=int, default=s.top_k)
     a = ap.parse_args()
 
-    chunks = load_chunks(a.pdf, a.chunk_size)
-    pairs = load_pairs(chunks, a.questions)
-    train_pairs, test_pairs = split_pairs(pairs, a.test_fraction, a.seed)
-    print(f"{len(chunks)} chunks | {len(train_pairs)} train pairs | {len(test_pairs)} held-out test pairs")
-
-    before = evaluate(a.base, test_pairs, chunks, a.k)
-    train(train_pairs, a.base, a.out, a.epochs)
-    after = evaluate(a.out, test_pairs, chunks, a.k)
-
-    print(f"\nHeld-out questions (dense retrieval only, k={a.k})")
+    r = run(a.pdf, a.questions, a.base, a.out, test_questions=a.test_questions, chunk_size=a.chunk_size,
+            epochs=a.epochs, test_fraction=a.test_fraction, seed=a.seed, k=a.k)
+    json.dump(r, open(a.results, "w"), indent=1)
+    print(f"\n{r['chunks']} chunks | {r['train_pairs']} train pairs | {r['test_pairs']} test questions")
+    print(f"Test questions (dense retrieval only, k={a.k})")
     print(f"{'model':<28}{'hit@1':>8}{f'hit@{a.k}':>8}{'MRR':>8}")
-    for name, m in [("base: " + a.base.split('/')[-1], before), ("fine-tuned", after)]:
+    for name, m in [("base: " + a.base.split('/')[-1], r["before"]), ("fine-tuned", r["after"])]:
         print(f"{name:<28}{m['hit@1']:>8.0%}{m[f'hit@{a.k}']:>8.0%}{m['mrr']:>8.2f}")
     print("\nCaveat: test questions are unseen phrasings but target chunks seen in training, so this is the "
           "in-domain gain on THIS document, not a promise about new documents. Few test questions = noisy.")
