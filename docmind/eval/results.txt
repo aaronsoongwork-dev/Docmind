@@ -1,0 +1,13 @@
+Embedding fine-tuning--------------
+The LLM generated questions for each chunk, giving 432 (question, correct chunk) training pairs. 
+I trained with a contrastive loss that pulls each question toward its chunk and away from other chunks 
+in the batch, keeping two questions about the same chunk out of one batch. I tested on 28 held-out phrasings, 
+dense retrieval only, since fine-tuning only affects the embeddings. hit@4 went from 46% to 64% and MRR from 
+0.40 to 0.49. The caveat is that this is the gain on this document, not new ones, a
+nd 28 questions is a small sample."
+
+Retrieval fine-tuning
+For retrieval, I ran 30 questions with known answers across chunk sizes from 200 to 1200,
+ measuring hit@4. Hybrid beat dense at every size, and reranking at 800 took it from 77% to 87%. 
+ 1200 matched that but sent about 40% more text to the LLM, so I chose 800. With only 30 questions, 
+ small differences could be noise.
