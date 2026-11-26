@@ -6,8 +6,14 @@ dense retrieval only, since fine-tuning only affects the embeddings. hit@4 went 
 0.40 to 0.49. The caveat is that this is the gain on this document, not new ones, a
 nd 28 questions is a small sample."
 
-Retrieval fine-tuning
+Retrieval evaluation----
 For retrieval, I ran 30 questions with known answers across chunk sizes from 200 to 1200,
  measuring hit@4. Hybrid beat dense at every size, and reranking at 800 took it from 77% to 87%. 
  1200 matched that but sent about 40% more text to the LLM, so I chose 800. With only 30 questions, 
  small differences could be noise.
+
+
+Generation evaluation----
+the RAG triad of context relevance (are the chunks relevant?), 
+faithfulness (is the answer supported by them?) and answer relevance (does it address the question?). 
+A fixed question set lets me compare changes fairly."

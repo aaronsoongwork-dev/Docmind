@@ -1,0 +1,63 @@
+(.venv) PS C:\Users\User\Desktop\Work\GITHUB-aarondev\Docmind\Docmind\docmind> python -m eval.run_eval data/handbook.pdf eval/eval_set.json --chunk-sizes 200 400 800 1200 -k 4
+Loading weights: 100%|███████████████████████████████████████████████████████████████████████████████| 199/199 [00:00<00:00, 3094.45it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights: 100%|█████████████████████████████████████████████████████████████████████████████████| 201/201 [00:02<00:00, 72.48it/s]
+Loading weights: 100%|███████████████████████████████████████████████████████████████████████████████| 199/199 [00:00<00:00, 2519.84it/s]
+Loading weights: 100%|███████████████████████████████████████████████████████████████████████████████| 199/199 [00:00<00:00, 2783.58it/s]
+Loading weights: 100%|███████████████████████████████████████████████████████████████████████████████| 199/199 [00:00<00:00, 2072.72it/s]
+30 questions, hit@4
+
+ chunk  #chunks  method           hit-rate  context chars
+   200     6739  dense                 57%            612
+   200     6739  sparse                50%            620
+   200     6739  hybrid                63%            614
+   200     6739  hybrid+rerank         67%            617
+   400     2992  dense                 50%           1407
+   400     2992  sparse                60%           1437
+   400     2992  hybrid                70%           1411
+   400     2992  hybrid+rerank         73%           1426
+   800     1647  dense                 47%           2776
+   800     1647  sparse                77%           2885
+   800     1647  hybrid                77%           2864
+   800     1647  hybrid+rerank         87%           2874
+  1200     1190  dense                 53%           3538
+  1200     1190  sparse                70%           4321
+  1200     1190  hybrid                77%           4014
+  1200     1190  hybrid+rerank         87%           3993
+
+'context chars' = text sent to the LLM per question. Small chunks send less text for the same k,
+so compare hit-rate AND context size, not hit-rate alone. Saved to eval/results.json
+(.venv) PS C:\Users\User\Desktop\Work\GITHUB-aarondev\Docmind\Docmind\docmind> 
+
+  super().__init__(loader)
+{'loss': '1.338', 'grad_norm': '8.693', 'learning_rate': '2e-05', 'epoch': '0.3704'}                                                     
+{'loss': '0.9868', 'grad_norm': '7.247', 'learning_rate': '1.722e-05', 'epoch': '0.7407'}                                                
+{'loss': '0.8176', 'grad_norm': '8.375', 'learning_rate': '1.444e-05', 'epoch': '1.111'}                                                 
+{'loss': '0.592', 'grad_norm': '7.439', 'learning_rate': '1.167e-05', 'epoch': '1.481'}                                                  
+{'loss': '0.6447', 'grad_norm': '7.907', 'learning_rate': '8.889e-06', 'epoch': '1.852'}                                                 
+{'loss': '0.5276', 'grad_norm': '8.401', 'learning_rate': '6.111e-06', 'epoch': '2.222'}                                                 
+{'loss': '0.5073', 'grad_norm': '6.999', 'learning_rate': '3.333e-06', 'epoch': '2.593'}                                                 
+{'loss': '0.5323', 'grad_norm': '8.477', 'learning_rate': '5.556e-07', 'epoch': '2.963'}                                                 
+{'train_runtime': '509.3', 'train_samples_per_second': '2.545', 'train_steps_per_second': '0.159', 'train_loss': '0.7379', 'epoch': '3'} 
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████| 81/81 [08:29<00:00,  6.29s/it]
+INFO Saving model to models/docmind-embed-ft
+Writing model shards: 100%|████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00,  8.99it/s]
+INFO No device provided, using cpu
+INFO Loading SentenceTransformer model from models/docmind-embed-ft.
+Loading weights: 100%|███████████████████████████████████████████████████████████████████████████████| 199/199 [00:00<00:00, 3446.80it/s]
+INFO HTTP Request: GET https://huggingface.co/api/models/models/docmind-embed-ft "HTTP/1.1 401 Unauthorized"
+Batches: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 52/52 [01:27<00:00,  1.69s/it]
+Batches: 100%|█████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00,  8.03it/s]
+
+1647 chunks | 432 train pairs | 28 test questions
+Test questions (dense retrieval only, k=4)
+model                          hit@1   hit@4     MRR
+base: bge-small-en-v1.5          29%     46%    0.40
+fine-tuned                       32%     64%    0.49
+
+Caveat: test questions are unseen phrasings but target chunks seen in training, so this is the in-domain gain on THIS document, not a promise about new documents. Few test questions = noisy.
+(.venv) PS C:\Users\User\Desktop\Work\GITHUB-aarondev\Docmind\Docmind\docmind> 
+
+i ran experiment 1 and 2
+
+experiemtn 3 no time - do these exp 1 and 2 cover fine tuning ?
